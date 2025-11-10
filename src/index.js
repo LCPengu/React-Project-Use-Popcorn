@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.js";
+import App1 from "./App-error.js";
 import StarRating from "./StarRating.js";
 
 function Test() {
@@ -17,8 +18,8 @@ function Test() {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-    <StarRating maxRating={10} />
+    <App1 />
+    {/* <StarRating maxRating={10} /> */}
     <Test />
   </React.StrictMode>
 );
