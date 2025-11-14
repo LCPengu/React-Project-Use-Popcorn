@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies.js";
+import { useLocalStorageState } from "./useLocalStorageState.js";
+import { useKey } from "./useKey.js";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -8,23 +10,11 @@ const average = (arr) =>
 function Searchbar({ query, setQuery }) {
   const inputEle = useRef(null);
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (document.activeElement === inputEle.current) {
-          return;
-        }
-        if (e.code === "Enter") {
-          inputEle.current.focus();
-          setQuery("");
-        }
-      }
-
-      document.addEventListener("keydown", callback);
-      return () => document.removeEventListener("keydown", callback);
-    },
-    [setQuery]
-  );
+  useKey("Enter", function () {
+    if (document.activeElement === inputEle.current) return;
+    inputEle.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
@@ -254,7 +244,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
-  useEffect(
+  useKey("Escape", onCloseMovie);
+  /*   useEffect(
     function () {
       function callback(e) {
         if (e.code === "Escape") {
@@ -269,7 +260,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       };
     },
     [onCloseMovie]
-  );
+  ); */
 
   useEffect(
     function () {
@@ -389,11 +380,17 @@ const apikey = "adabc3d8";
 export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const { movies, isLoading, error } = useMovies(query, apikey);
-  const [watched, setWatched] = useState(function () {
+  const { movies, isLoading, error } = useMovies(
+    query,
+    apikey
+    //handleCloseMovie
+  );
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
+  /*   const [watched, setWatched] = useState(function () {
     const storedWatched = localStorage.getItem("watched");
     return storedWatched ? JSON.parse(storedWatched) : [];
-  });
+  }); */
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -413,12 +410,12 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-  useEffect(
+  /* useEffect(
     function () {
       localStorage.setItem("watched", JSON.stringify(watched));
     },
     [watched]
-  );
+  ); */
 
   return (
     <>
